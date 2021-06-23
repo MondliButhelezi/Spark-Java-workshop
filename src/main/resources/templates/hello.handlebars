@@ -13,9 +13,37 @@
 <form action="/hello" method="post" >
     <input type="text" name="username">
     <input type="submit" >
-</form>
+    <br>
+    <br>
+    <input type="radio" name="language" value="english">
+    <label for="english">English</label>
 
+    <input type="radio" name="language" value="sotho">
+    <label for="sotho">Sotho</label>
+
+    <input type="radio" name="language" value="zulu">
+    <label for="zulu">Zulu</label>
+
+    <input type="radio" name="language" value="xhosa">
+    <label for="xhosa">Xhosa</label>
+    <br>
+</form>
+<br>
 {{greeting}}
+<br>
+
+    <span>
+         <p>The number of users greeted is: </p>
+        {{totalCount}}
+    </span>
+
+<div>
+    <ul>
+        {{#each users}}
+            <li>{{this}}</li>
+        {{/each}}
+    </ul>
+</div>
 
 </body>
 </html>
