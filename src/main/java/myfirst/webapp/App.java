@@ -2,6 +2,7 @@ package myfirst.webapp;
 import spark.ModelAndView;
 import spark.template.handlebars.HandlebarsTemplateEngine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -99,7 +100,14 @@ public class App {
 
         // 5TH PART
         get("/greeted", (req, res) -> {
-            Map<String, Object> map = new HashMap<>();
+            ArrayList<String> naming = new ArrayList<>();
+
+            for (Map.Entry<String, Integer> names : countGreet.entrySet()) {
+                String availableNames = names.getKey();
+                naming.add(availableNames);
+            }
+            map.put("getNames",naming);
+
             return new ModelAndView(map, "greeted.handlebars");
         }, new HandlebarsTemplateEngine());
 
