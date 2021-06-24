@@ -10,10 +10,20 @@ import static spark.Spark.*;
 
 public class App {
 
+    static Map<String, Object> map = new HashMap<>();
+    static Map<String, Integer> countGreet = new HashMap<>();
+
+    static int getHerokuAssignedPort() {
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        if (processBuilder.environment().get("PORT") != null) {
+            return Integer.parseInt(processBuilder.environment().get("PORT"));
+        }
+        return 4050;
+    }
 
     public static void main(String[] args) {
 
-        port(4050);
+        port(getHerokuAssignedPort());
         staticFiles.location("/public"); // linking static files index and hello.handlebars.
 
         //1ST PART
@@ -22,41 +32,47 @@ public class App {
         get("/greet/:username", (request, response) -> {
             return "Dumela, " + request.params(":username");
         });
+
         // 2ND PART
         get("/greet/:username/language/:language", (request, response) -> {
+            String names = request.params(":username");
+            names = names.substring(0, 1).toUpperCase() + names.substring(1).toLowerCase();
+
             if (request.params("language").equals("english")) {
-                return "Hello " +  request.params("username");
+                return "Hello " + names;
             } else if (request.params("language").equals("sotho")) {
-                return "Dumela " + request.params("username");
+                return "Dumela " + names;
             } else if (request.params("language").equals("zulu")) {
-                return "Sawubona " + request.params("username");
+                return "Sawubona " + names;
             }else if (request.params("language").equals("xhosa")) {
-                return "Molo " + request.params("username");
+                return "Molo " + names;
             } else {
-                return "Dumela, " + request.params(":username");
+                return "Dumela, " + names;
             }
         });
 
         // 3RD PART
         post("/greet", (request, response) -> {
+            String username = request.queryParams("username");
+            username = username.substring(0, 1).toUpperCase();
+
             if (request.queryParams("username").isEmpty()) {
                 return "Dumela!";
             } else {
-                return "Dumela " + request.queryParams("username");
+                return "Dumela " + username;
             }
         });
 
-        get("/hello", (req, res) -> {
-            Map<String, Object> map = new HashMap<>();
+        get("/hello", (request, response) -> {
             return new ModelAndView(map, "hello.handlebars");
         }, new HandlebarsTemplateEngine());
 
         // 4TH PART
         post("/hello", (request, response) -> {
-            Map<String, Object> map = new HashMap<>();
 
             String message = new String();
             String greeting =  request.queryParams("username");
+            greeting = greeting.substring(0,1).toUpperCase() + greeting.substring(1).toLowerCase();
             String language = request.queryParams("language");
 
             if (language.equalsIgnoreCase("ENGLISH")) {
@@ -69,7 +85,6 @@ public class App {
                 message = "Molo, " + greeting;
             }
 
-            Map<String, Integer> countGreet = new HashMap<>();
             if (!countGreet.containsKey(greeting)) {
                 countGreet.put(greeting,1);
             } else if (countGreet.containsKey(greeting)) {
