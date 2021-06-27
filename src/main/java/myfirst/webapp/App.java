@@ -1,4 +1,5 @@
 package myfirst.webapp;
+import jdk.internal.org.objectweb.asm.Handle;
 import spark.ModelAndView;
 import spark.template.handlebars.HandlebarsTemplateEngine;
 
@@ -19,10 +20,22 @@ public class App {
         if (processBuilder.environment().get("PORT") != null) {
             return Integer.parseInt(processBuilder.environment().get("PORT"));
         }
-        return 4050;
+        return 4050;//return default port if heroku-port isn't set (i.e. on localhost)
     }
 
     public static void main(String[] args) {
+
+        // connecting to maven
+        String dbDiskURL = "jdbc:h2:file:./greetdb";
+        // String dbMemoryURL = "jdbc:h2:mem:greetdb";
+
+        Jdbi jdbi = Jdbi.create(dbDiskURL, "sa", "");
+
+        // get a handle to the database
+        Handle handle = jdbi.open();
+
+        // create the table if needed
+        handle.execute("create table if not exists greet ( id integer identity, name varchar(50), counter int )");
 
         port(getHerokuAssignedPort());
         staticFiles.location("/public"); // linking static files index and hello.handlebars.
